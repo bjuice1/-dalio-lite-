@@ -1,0 +1,20 @@
+# Dalio Lite Production Dependencies
+
+# Core Trading
+alpaca-py>=0.25.0  # Alpaca trading API
+PyYAML>=6.0        # Config file parsing
+
+# Dashboard & UI
+streamlit>=1.28.0  # Web dashboard
+
+# Data & Analysis
+pandas>=2.0.0      # Data manipulation
+numpy>=1.24.0      # Numerical operations
+
+# Production Hardening
+filelock>=3.12.0   # Concurrency control
+python-dotenv>=1.0.0  # Environment variables
+
+# Optional: Notifications
+# python-telegram-bot>=20.0  # Uncomment if using Telegram notifications
+# requests>=2.31.0  # For Slack/Pushover webhooks
