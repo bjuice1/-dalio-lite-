@@ -1,0 +1,82 @@
+flowchart TB
+    subgraph "External Data Sources [CRITICAL DEPENDENCIES]"
+        A1[Alpaca Trading API<br/>GET /v2/account<br/>🟢 Rate: 200/min<br/>Returns: cash, equity, portfolio_value]
+        A2[Alpaca Trading API<br/>GET /v2/positions<br/>🟢 Rate: 200/min<br/>Returns: symbol, qty, market_value]
+        A3[Alpaca Market Data API<br/>GET /v2/stocks/quotes/latest<br/>🟢 Rate: 200/min<br/>Returns: bid_price, ask_price]
+        A4[Alpaca Trading API<br/>POST /v2/orders<br/>🟢 Rate: 200/min<br/>Submit: symbol, notional, side]
+    end
+
+    subgraph "Configuration Layer [STATIC DATA]"
+        C1[(config.yaml<br/>64 lines<br/>Target Allocation:<br/>VTI: 40%, TLT: 30%<br/>GLD: 20%, DBC: 10%)]
+        C2[(.env file<br/>API Keys<br/>ALPACA_API_KEY<br/>ALPACA_SECRET_KEY)]
+    end
+
+    subgraph "Core Processing [459 lines Python]"
+        P1[DalioLite.__init__<br/>🔵 Startup Phase]
+        P2[get_current_positions<br/>🔵 Data Fetch Phase<br/>Calculates % allocation]
+        P3[calculate_drift<br/>🔵 Analysis Phase<br/>Current % - Target %]
+        P4[needs_rebalancing<br/>🔵 Decision Phase<br/>Checks: drift >10%<br/>AND >30 days elapsed]
+        P5[calculate_rebalance_orders<br/>🔵 Planning Phase<br/>Determines $ to buy/sell]
+        P6[execute_rebalance<br/>🔵 Execution Phase<br/>Sells first, then buys]
+        P7[check_circuit_breakers<br/>🔴 Risk Management<br/>Daily loss check: -5% max<br/>Drawdown check: -30% max]
+    end
+
+    subgraph "State Management [FILE-BASED]"
+        S1[(state/last_rebalance.json<br/>Timestamp tracking<br/>ISO 8601 format<br/>Used for min_days_between)]
+    end
+
+    subgraph "Output & Logging [PERSISTENCE]"
+        O1[(logs/dalio_lite.log<br/>Rotating text file<br/>Format: timestamp | level | message<br/>Audit trail for all actions)]
+        O2[(reports/report_YYYYMMDD.json<br/>Daily snapshots<br/>Portfolio value, positions, cash<br/>Performance tracking)]
+        O3[Console Output<br/>Real-time status<br/>Rebalance notifications]
+    end
+
+    %% Startup Flow
+    P1 -->|Load| C1
+    P1 -->|Load secrets| C2
+    P1 -->|Connect & verify| A1
+    P1 -->|Load state| S1
+    P1 -->|Initialize logger| O1
+
+    %% Daily Check Flow
+    P1 --> P7
+    P7 -->|Fetch account| A1
+    P7 -->|✓ Pass| P2
+    P7 -.🛑 Fail.-> O1
+    P7 -.🛑 Fail.-> O3
+
+    P2 -->|Fetch positions| A2
+    P2 -->|Read target| C1
+    P2 --> P3
+
+    P3 -->|Compare| P4
+    P4 -->|Check state| S1
+    P4 -.No rebal needed.-> O1
+    P4 -->|✓ Rebal needed| P5
+
+    P5 -->|Fetch account| A1
+    P5 --> P6
+
+    %% Execution Flow
+    P6 -->|Get prices| A3
+    P6 -->|Submit SELL orders| A4
+    P6 -->|Submit BUY orders| A4
+    P6 -->|Update state| S1
+    P6 -->|Log actions| O1
+    P6 -->|Notify| O3
+
+    %% Reporting Flow
+    A1 -.Performance data.-> O2
+    A2 -.Performance data.-> O2
+    P2 -.Performance data.-> O2
+
+    style A1 fill:#6bcf7f,stroke:#2d5f3f
+    style A2 fill:#6bcf7f,stroke:#2d5f3f
+    style A3 fill:#6bcf7f,stroke:#2d5f3f
+    style A4 fill:#6bcf7f,stroke:#2d5f3f
+    style P7 fill:#ff6b6b,stroke:#cc5555
+    style C1 fill:#ffd93d,stroke:#ccad31
+    style C2 fill:#ff9999,stroke:#cc5555
+    style S1 fill:#a8dadc,stroke:#457b9d
+    style O1 fill:#e9c46a,stroke:#f4a261
+    style O2 fill:#e9c46a,stroke:#f4a261

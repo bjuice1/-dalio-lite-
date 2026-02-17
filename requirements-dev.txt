@@ -1,0 +1,16 @@
+# Development Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+responses>=0.23.0
+
+# Concurrency Control
+filelock>=3.12.0
+
+# Code Quality (optional but recommended)
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0

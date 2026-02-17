@@ -1,0 +1,75 @@
+graph TB
+    subgraph "User Interface [SCALE: Low, BOTTLENECK: None]"
+        A[User/Cron<br/>Daily Execution]
+        B[CLI: dalio_lite.py<br/>Commands: run | dry-run | report]
+    end
+
+    subgraph "Core Application [SCALE: Medium, BOTTLENECK: None]"
+        C[DalioLite Class<br/>Portfolio Manager<br/>459 lines Python]
+        D[Config Loader<br/>YAML Parser<br/>🟢 Validates allocation = 100%]
+        E[Drift Calculator<br/>Current % vs Target %<br/>Threshold: 10%]
+        F[Rebalance Engine<br/>Order Sequencing<br/>Sells → Buys]
+        G[Circuit Breakers<br/>Risk Management<br/>🔴 5% daily | 30% drawdown]
+    end
+
+    subgraph "Storage Layer [SCALE: Low, BOTTLENECK: None]"
+        H[(Config File<br/>config.yaml<br/>64 lines)]
+        I[(State Storage<br/>JSON Files<br/>last_rebalance.json)]
+        J[(Logs<br/>Text Files<br/>dalio_lite.log)]
+        K[(Reports<br/>JSON Snapshots<br/>Performance Data)]
+    end
+
+    subgraph "External Services [DEPENDENCIES: Critical]"
+        L[Alpaca Trading API<br/>REST + Python SDK<br/>🟢 Rate: 200/min<br/>SLA: 99.9%]
+        M[Market Data<br/>Real-time Quotes<br/><100ms latency]
+        N[Order Execution<br/>Buy/Sell Orders<br/>Paper + Live Mode]
+    end
+
+    subgraph "Target Portfolio [Static Allocation]"
+        O[VTI: 40%<br/>US Stocks]
+        P[TLT: 30%<br/>Long Bonds]
+        Q[GLD: 20%<br/>Gold]
+        R[DBC: 10%<br/>Commodities]
+    end
+
+    A -->|Invoke| B
+    B -->|Initialize| C
+    C -->|Load| H
+    C -->|Load State| I
+    C -->|Connect| L
+    C -->|Compose| D
+    C -->|Compose| E
+    C -->|Compose| F
+    C -->|Compose| G
+
+    D -->|Read| H
+    E -->|Calculate| C
+    F -->|Execute| N
+    G -->|Safety Check| C
+
+    C -->|Get Account| L
+    C -->|Get Positions| L
+    C -->|Get Quotes| M
+    C -->|Submit Orders| N
+
+    L -->|Account Data| C
+    M -->|Price Data| C
+    N -->|Order Status| C
+
+    C -->|Update| I
+    C -->|Write| J
+    C -->|Generate| K
+
+    O -.Target.-> E
+    P -.Target.-> E
+    Q -.Target.-> E
+    R -.Target.-> E
+
+    style L fill:#6bcf7f,stroke:#2d5f3f
+    style G fill:#ff6b6b,stroke:#cc5555
+    style H fill:#ffd93d,stroke:#ccad31
+    style C fill:#a8dadc,stroke:#457b9d
+    style O fill:#e9c46a,stroke:#f4a261
+    style P fill:#e9c46a,stroke:#f4a261
+    style Q fill:#e9c46a,stroke:#f4a261
+    style R fill:#e9c46a,stroke:#f4a261

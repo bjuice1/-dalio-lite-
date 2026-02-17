@@ -1,0 +1,159 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "type": "rectangle",
+      "id": "user-interface",
+      "x": 100,
+      "y": 100,
+      "width": 400,
+      "height": 150,
+      "fillStyle": "hachure",
+      "strokeColor": "#1971c2",
+      "backgroundColor": "#a5d8ff",
+      "label": {
+        "text": "USER INTERFACE\n\nUser/Cron → CLI (dalio_lite.py)\nCommands: run | dry-run | report\n\n[SCALE: Low, BOTTLENECK: None]"
+      }
+    },
+    {
+      "type": "rectangle",
+      "id": "core-logic",
+      "x": 100,
+      "y": 300,
+      "width": 400,
+      "height": 300,
+      "fillStyle": "hachure",
+      "strokeColor": "#1864ab",
+      "backgroundColor": "#d0ebff",
+      "label": {
+        "text": "CORE APPLICATION LOGIC\n\nDalioLite Class (459 lines)\n├─ Config Loader (YAML)\n├─ Drift Calculator (current vs target %)\n├─ Rebalance Engine (sells → buys)\n└─ Circuit Breakers (5% daily, 30% drawdown)\n\n[SCALE: Medium, BOTTLENECK: None]"
+      }
+    },
+    {
+      "type": "rectangle",
+      "id": "storage",
+      "x": 550,
+      "y": 300,
+      "width": 300,
+      "height": 300,
+      "fillStyle": "hachure",
+      "strokeColor": "#f08c00",
+      "backgroundColor": "#ffe8cc",
+      "label": {
+        "text": "STORAGE LAYER\n\n📄 config.yaml (64 lines)\n   Target allocation: 40/30/20/10\n\n📄 state/last_rebalance.json\n   Timestamp tracking\n\n📄 logs/dalio_lite.log\n   Audit trail\n\n📄 reports/*.json\n   Performance snapshots\n\n[SCALE: Low, BOTTLENECK: None]"
+      }
+    },
+    {
+      "type": "rectangle",
+      "id": "alpaca-api",
+      "x": 100,
+      "y": 650,
+      "width": 400,
+      "height": 200,
+      "fillStyle": "hachure",
+      "strokeColor": "#2f9e44",
+      "backgroundColor": "#b2f2bb",
+      "label": {
+        "text": "ALPACA TRADING API\n(External Service - CRITICAL)\n\n✓ Account Management\n✓ Position Tracking\n✓ Real-time Quotes (<100ms)\n✓ Order Execution (Paper/Live)\n\nRate Limit: 🟢 200 req/min\nSLA: 99.9% uptime"
+      }
+    },
+    {
+      "type": "rectangle",
+      "id": "target-portfolio",
+      "x": 550,
+      "y": 650,
+      "width": 300,
+      "height": 200,
+      "fillStyle": "solid",
+      "strokeColor": "#e67700",
+      "backgroundColor": "#ffd43b",
+      "label": {
+        "text": "TARGET PORTFOLIO\n(All Weather Strategy)\n\n📊 VTI: 40% (US Stocks)\n📊 TLT: 30% (Long Bonds)\n📊 GLD: 20% (Gold)\n📊 DBC: 10% (Commodities)\n\nRebalance when drift >10%"
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "arrow-1",
+      "x": 300,
+      "y": 250,
+      "points": [[0, 0], [0, 50]],
+      "strokeColor": "#1971c2",
+      "label": {
+        "text": "Initialize"
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "arrow-2",
+      "x": 500,
+      "y": 450,
+      "points": [[0, 0], [50, 0]],
+      "strokeColor": "#f08c00",
+      "label": {
+        "text": "Load Config\nLoad State\nWrite Logs"
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "arrow-3",
+      "x": 300,
+      "y": 600,
+      "points": [[0, 0], [0, 50]],
+      "strokeColor": "#2f9e44",
+      "label": {
+        "text": "API Calls:\n- Get Account\n- Get Positions\n- Get Quotes\n- Submit Orders"
+      }
+    },
+    {
+      "type": "arrow",
+      "id": "arrow-4",
+      "x": 500,
+      "y": 750,
+      "points": [[0, 0], [50, 0]],
+      "strokeColor": "#e67700",
+      "strokeStyle": "dashed",
+      "label": {
+        "text": "Compare:\nCurrent vs Target"
+      }
+    },
+    {
+      "type": "text",
+      "id": "legend",
+      "x": 900,
+      "y": 100,
+      "text": "LEGEND\n\n🟢 Green = External (healthy)\n🔵 Blue = User/CLI\n💙 Light Blue = Core Logic\n🟡 Orange = Storage\n🟠 Yellow = Target/Config\n\nDashed arrows = Data comparison\nSolid arrows = Direct calls\n\n⚠️ BOTTLENECKS:\nNone detected (single-user scale)",
+      "fontSize": 14,
+      "fontFamily": 1
+    },
+    {
+      "type": "text",
+      "id": "daily-flow",
+      "x": 900,
+      "y": 400,
+      "text": "TYPICAL DAILY FLOW:\n\n1. User/cron invokes script\n2. Load config + state\n3. Connect to Alpaca\n4. Fetch current positions\n5. Calculate drift\n6. IF drift >10% AND >30 days:\n   a. Check circuit breakers\n   b. Calculate orders\n   c. Execute sells → buys\n   d. Update state\n7. Log results\n8. Exit\n\nExecution time: 3-8 seconds",
+      "fontSize": 12,
+      "fontFamily": 3
+    },
+    {
+      "type": "rectangle",
+      "id": "warning-box",
+      "x": 100,
+      "y": 900,
+      "width": 750,
+      "height": 80,
+      "fillStyle": "solid",
+      "strokeColor": "#e03131",
+      "backgroundColor": "#ffe0e0",
+      "label": {
+        "text": "⚠️ CRITICAL DEPENDENCY: Alpaca API\n\nIf Alpaca is down → System cannot rebalance\nMitigation: None currently (would need circuit breaker + retry logic)\nRecovery: Wait for Alpaca to recover, retry next day"
+      }
+    }
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}
