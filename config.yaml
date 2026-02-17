@@ -1,0 +1,63 @@
+# Dalio Lite Configuration
+# Simple All Weather portfolio for learning and small accounts ($10K-50K)
+
+# Portfolio allocation (must sum to 1.0)
+allocation:
+  VTI: 0.40  # US Total Stock Market (growth engine)
+  TLT: 0.30  # 20+ Year Treasury Bonds (deflation hedge)
+  GLD: 0.20  # Gold (inflation hedge, safe haven)
+  DBC: 0.10  # Commodities (inflation hedge, diversifier)
+
+# Rebalancing rules
+rebalancing:
+  # Only rebalance if any position drifts more than this % from target
+  drift_threshold: 0.10  # 10% = reasonable balance between costs and discipline
+
+  # Minimum days between rebalances (prevent overtrading)
+  min_days_between: 30
+
+  # Minimum trade size (avoid tiny orders with bad pricing)
+  min_trade_usd: 100
+
+# Risk management
+risk:
+  # Max portfolio loss before pausing rebalancing (circuit breaker)
+  max_drawdown_pause: 0.30  # 30% loss = stop and review
+
+  # Max single-day loss before alerting
+  max_daily_loss: 0.05  # 5% in one day = something's wrong
+
+# Notifications
+notifications:
+  enabled: true
+  # Set to your preferred method: console, email, telegram, or file
+  method: console
+  # If method=telegram, set your bot token and chat_id in .env
+
+# Paper trading (ALWAYS START HERE)
+mode:
+  paper_trading: true  # Set to false only after 6 months of successful paper trading
+
+# Broker settings (Alpaca)
+broker:
+  name: alpaca
+  # API keys go in .env file (never commit to git)
+  # ALPACA_API_KEY=your_paper_key
+  # ALPACA_SECRET_KEY=your_paper_secret
+  # For live trading, use separate live keys
+
+# Logging
+logging:
+  level: INFO  # DEBUG for development, INFO for production
+  file: logs/dalio_lite.log
+
+# Performance tracking
+tracking:
+  # Compare against these benchmarks
+  benchmarks:
+    - SPY   # S&P 500 (stock benchmark)
+    - AGG   # Total Bond Market (bond benchmark)
+    - VBIAX # Vanguard 60/40 (classic balanced benchmark)
+
+  # Generate performance report every N days
+  report_frequency_days: 30
