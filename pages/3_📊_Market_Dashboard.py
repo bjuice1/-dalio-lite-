@@ -114,7 +114,7 @@ with col1:
         }
     ))
     fig.update_layout(height=250, font=dict(family='Inter'))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     # Inflation indicator
@@ -149,7 +149,7 @@ with col2:
         }
     ))
     fig.update_layout(height=250, font=dict(family='Inter'))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # Environment matrix
 st.markdown("### 🎯 Current Environment: **Goldilocks** (High Growth + Moderate Inflation)")
@@ -182,7 +182,7 @@ asset_performance = pd.DataFrame({
     'Trend': ['🚀', '📉', '📊', '📈']
 })
 
-st.dataframe(asset_performance, use_container_width=True, hide_index=True)
+st.dataframe(asset_performance, width='stretch', hide_index=True)
 
 # Performance chart
 fig = go.Figure()
@@ -295,7 +295,7 @@ with col1:
         showarrow=False,
         font=dict(size=20, color='#48bb78', family='Inter')
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     # Risk-On vs Risk-Off indicator
@@ -329,7 +329,7 @@ with col2:
         showlegend=False
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # Overall assessment
 risk_score = risk_indicators[risk_indicators['Signal'] == 'Risk On']['Strength'].sum() / len(risk_indicators)
@@ -371,7 +371,7 @@ events = pd.DataFrame({
     'Watch For': ['Rate hints', 'Core inflation', 'Growth momentum', 'Fed target metric']
 })
 
-st.dataframe(events, use_container_width=True, hide_index=True)
+st.dataframe(events, width='stretch', hide_index=True)
 
 st.info("💡 **Pro Tip:** High-impact events can cause increased volatility. System may trigger circuit breakers if markets move >5% in a day.")
 

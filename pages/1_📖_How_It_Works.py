@@ -110,7 +110,7 @@ with col2:
         height=400,
         showlegend=False
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # Economic environments table
 st.markdown("### 📊 Performance by Economic Environment")
@@ -123,7 +123,7 @@ env_data = pd.DataFrame({
     'Commodities (DBC)': ['🟢 Strong', '🔴 Weak', '🟢 Strong', '🔴 Weak']
 })
 
-st.dataframe(env_data, use_container_width=True, hide_index=True)
+st.dataframe(env_data, width='stretch', hide_index=True)
 
 st.markdown("---")
 

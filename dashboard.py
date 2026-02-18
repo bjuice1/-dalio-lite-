@@ -469,7 +469,7 @@ if not st.session_state.connected:
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)'
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
 else:
     # Connected state - Full dashboard with progressive disclosure
@@ -656,7 +656,7 @@ else:
                         showlegend=True,
                         legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.1)
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch')
                 else:
                     st.info("📭 No positions yet - run your first rebalance!")
 
@@ -675,7 +675,7 @@ else:
                     showlegend=True,
                     legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.1)
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
 
             # Allocation comparison table
             st.markdown("### Allocation Details")
@@ -701,7 +701,7 @@ else:
                 })
 
             df = pd.DataFrame(allocation_data)
-            st.dataframe(df, use_container_width=True, hide_index=True)
+            st.dataframe(df, width='stretch', hide_index=True)
 
         except Exception as e:
             message, severity = translate_exception(e, context="Loading portfolio data")

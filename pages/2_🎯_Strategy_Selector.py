@@ -154,7 +154,7 @@ for name, data in strategies.items():
     })
 
 df_comparison = pd.DataFrame(comparison_data)
-st.dataframe(df_comparison, use_container_width=True, hide_index=True)
+st.dataframe(df_comparison, width='stretch', hide_index=True)
 
 st.markdown("---")
 
@@ -260,7 +260,7 @@ else:
             {"Asset": "🌾 DBC", "Percentage": f"{strategy['allocation']['DBC']:.0%}",
              "Dollar (on $100K)": f"${strategy['allocation']['DBC'] * 100000:,.0f}"}
         ])
-        st.dataframe(alloc_df, use_container_width=True, hide_index=True)
+        st.dataframe(alloc_df, width='stretch', hide_index=True)
 
     with col2:
         # Pie chart

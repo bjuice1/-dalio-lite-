@@ -153,7 +153,7 @@ if st.session_state.learning_level == "beginner":
             hovermode='x unified'
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.success(f"""
         **After 30 years:** $10,000 becomes **${values[-1]:,.0f}**
@@ -205,7 +205,7 @@ if st.session_state.learning_level == "beginner":
             height=400
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.info("""
         **Key Takeaway:** You can't get high returns without accepting some volatility.
@@ -258,7 +258,7 @@ if st.session_state.learning_level == "beginner":
             hovermode='x unified'
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.success("""
         **Notice:** Diversified portfolio (green) is much smoother.
@@ -324,7 +324,7 @@ if st.session_state.learning_level == "beginner":
             height=400
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
 elif st.session_state.learning_level == "intermediate":
     st.markdown("## 📊 INTERMEDIATE: Modern Portfolio Theory")
@@ -391,7 +391,7 @@ elif st.session_state.learning_level == "intermediate":
             height=400
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.info("""
         **Key Insight:** Negative correlations (red) are GOOD for diversification.
@@ -448,7 +448,7 @@ elif st.session_state.learning_level == "intermediate":
             height=500
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.success("""
         **What this means:**
@@ -496,7 +496,7 @@ elif st.session_state.learning_level == "intermediate":
             'Worst Asset': ['Bonds', 'Bonds', 'Bonds', 'Stocks']
         })
 
-        st.dataframe(env_performance, use_container_width=True, hide_index=True)
+        st.dataframe(env_performance, width='stretch', hide_index=True)
 
         st.info("""
         **All Weather Insight:** By holding ALL four asset classes, you're prepared
@@ -547,7 +547,7 @@ elif st.session_state.learning_level == "advanced":
             height=400
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.success("""
         **Risk Parity:** More balanced risk = more consistent returns across environments
@@ -623,7 +623,7 @@ elif st.session_state.learning_level == "advanced":
             height=400
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.success(f"""
         **Result:**
@@ -683,7 +683,7 @@ elif st.session_state.learning_level == "advanced":
             hovermode='x unified'
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         stats = pd.DataFrame({
             'Strategy': ['All Weather', '60/40', '100% Stocks'],
@@ -694,7 +694,7 @@ elif st.session_state.learning_level == "advanced":
             'Sharpe Ratio': ['0.89', '0.75', '0.56']
         })
 
-        st.dataframe(stats, use_container_width=True, hide_index=True)
+        st.dataframe(stats, width='stretch', hide_index=True)
 
         st.info("""
         **Key Insights:**
