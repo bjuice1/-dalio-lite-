@@ -8,6 +8,9 @@ import pandas as pd
 import yaml
 from pathlib import Path
 
+# Import trust indicators
+from trust_indicators import render_trust_bar
+
 st.set_page_config(
     page_title="Strategy Selector - Dalio Lite",
     page_icon="🎯",
@@ -66,6 +69,9 @@ st.markdown("""
     .risk-high { background: #fed7d7; color: #742a2a; }
 </style>
 """, unsafe_allow_html=True)
+
+# Trust indicators
+render_trust_bar()
 
 # Header
 st.title("🎯 Strategy Selector")

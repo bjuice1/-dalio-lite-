@@ -9,6 +9,9 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import pandas as pd
 
+# Import trust indicators
+from trust_indicators import render_trust_bar
+
 st.set_page_config(
     page_title="How It Works - Dalio Lite",
     page_icon="📖",
@@ -52,6 +55,9 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# Trust indicators
+render_trust_bar()
 
 # Header
 st.title("📖 How It Works")

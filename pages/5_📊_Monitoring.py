@@ -6,7 +6,14 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from health_check import health
 
+# Import error handling and trust indicators
+from error_handler import translate_exception, handle_error_display
+from trust_indicators import render_trust_bar
+
 st.set_page_config(page_title="Monitoring", page_icon="📊", layout="wide")
+
+# Trust indicators
+render_trust_bar()
 
 st.title("📊 System Monitoring")
 
@@ -54,7 +61,8 @@ try:
                     st.caption(check_result["message"])
 
 except Exception as e:
-    st.error(f"Health check failed: {e}")
+    message, severity = translate_exception(e, context="Running health check")
+    handle_error_display(message, severity)
 
 st.divider()
 
@@ -230,7 +238,8 @@ try:
 except FileNotFoundError:
     st.warning("⚠️ No metrics data available yet. Metrics will appear after the first rebalance operation.")
 except Exception as e:
-    st.error(f"Error loading metrics: {e}")
+    message, severity = translate_exception(e, context="Loading metrics data")
+    handle_error_display(message, severity)
 
 st.divider()
 
@@ -301,10 +310,12 @@ try:
                     st.caption(f"Transaction ID: {tx.get('transaction_id', 'Unknown')}")
 
             except Exception as e:
-                st.error(f"Error reading transaction log {log_file.name}: {e}")
+                message, severity = translate_exception(e, context=f"Reading transaction log {log_file.name}")
+                handle_error_display(message, severity)
 
 except Exception as e:
-    st.error(f"Error loading transaction logs: {e}")
+    message, severity = translate_exception(e, context="Loading transaction logs")
+    handle_error_display(message, severity)
 
 st.divider()
 

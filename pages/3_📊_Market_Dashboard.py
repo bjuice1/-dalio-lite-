@@ -10,6 +10,9 @@ import pandas as pd
 from datetime import datetime, timedelta
 import random  # For demo data - replace with real API calls
 
+# Import trust indicators
+from trust_indicators import render_trust_bar, render_demo_data_warning
+
 st.set_page_config(
     page_title="Market Dashboard - Dalio Lite",
     page_icon="📊",
@@ -54,6 +57,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Trust indicators
+render_trust_bar()
+
 # Header
 st.title("📊 Market Dashboard")
 st.markdown("### Real-Time Economic Indicators & Asset Performance")
@@ -62,6 +68,9 @@ st.markdown("### Real-Time Economic Indicators & Asset Performance")
 st.markdown(f"<div style='text-align: right; color: #718096; font-size: 0.875rem;'>Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>", unsafe_allow_html=True)
 
 st.markdown("---")
+
+# Demo data warning
+render_demo_data_warning()
 
 # Current Economic Environment Assessment
 st.markdown("## 🌍 Current Economic Environment")

@@ -12,6 +12,11 @@ import os
 from pathlib import Path
 import json
 
+# Import new error handling and trust indicators
+from error_handler import translate_exception, handle_error_display, safe_execute
+from trust_indicators import render_trust_bar, render_paper_trading_warning, render_live_trading_warning
+from goal_tracker import GoalTracker
+
 # Page config
 st.set_page_config(
     page_title="Dalio Lite - Portfolio Manager",
@@ -289,7 +294,8 @@ with st.sidebar:
                         st.session_state.connected = True
                     st.rerun()
                 except Exception as e:
-                    st.error(f"Connection failed: {str(e)}")
+                    message, severity = translate_exception(e, context="Connecting to Alpaca")
+                    handle_error_display(message, severity)
         else:
             st.markdown("<div class='status-badge status-success pulse'>🟢 CONNECTED</div>", unsafe_allow_html=True)
 
@@ -379,6 +385,12 @@ with col2:
 
 st.markdown("---")
 
+# Trust indicators and trading mode warnings
+if st.session_state.connected:
+    render_trust_bar()
+    render_paper_trading_warning()
+    render_live_trading_warning()
+
 # Main content
 if not st.session_state.connected:
     # Hero section for non-connected state
@@ -461,10 +473,10 @@ if not st.session_state.connected:
         st.plotly_chart(fig, use_container_width=True)
 
 else:
-    # Connected state - Full dashboard
+    # Connected state - Full dashboard with progressive disclosure
     dalio = st.session_state.dalio
 
-    # Top metrics row
+    # Fetch account data
     try:
         account = dalio.trading_client.get_account()
         portfolio_value = float(account.portfolio_value)
@@ -473,48 +485,155 @@ else:
         daily_pl = float(account.equity) - float(account.last_equity)
         daily_pl_pct = (daily_pl / float(account.last_equity) * 100) if float(account.last_equity) > 0 else 0
 
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            st.metric(
-                "💼 Portfolio Value",
-                f"${portfolio_value:,.2f}",
-                help="Total value of all positions + cash"
-            )
-
-        with col2:
-            st.metric(
-                "💵 Cash Available",
-                f"${cash:,.2f}",
-                help="Available cash for trading"
-            )
-
-        with col3:
-            st.metric(
-                "📊 Total Equity",
-                f"${equity:,.2f}",
-                help="Current equity value"
-            )
-
-        with col4:
-            st.metric(
-                "📈 Today's P/L",
-                f"${daily_pl:,.2f}",
-                f"{daily_pl_pct:+.2f}%",
-                delta_color="normal"
-            )
-
     except Exception as e:
-        st.error(f"⚠️ Error fetching account data: {str(e)}")
+        message, severity = translate_exception(e, context="Fetching account data")
+        handle_error_display(message, severity)
+        portfolio_value = 0
+        cash = 0
+        equity = 0
+        daily_pl = 0
+        daily_pl_pct = 0
+
+    # ========================================
+    # HERO SECTION - Portfolio Value + Goal Progress
+    # ========================================
+
+    # Large portfolio value display
+    st.markdown(f"""
+    <div style='text-align: center; padding: 2rem 0 1rem 0;'>
+        <div style='font-size: 1rem; color: #718096; margin-bottom: 0.5rem;'>Total Portfolio Value</div>
+        <div style='font-size: 4rem; font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>
+            ${portfolio_value:,.0f}
+        </div>
+        <div style='font-size: 1.2rem; color: {'#48bb78' if daily_pl >= 0 else '#f56565'}; margin-top: 0.5rem;'>
+            {'+' if daily_pl >= 0 else ''}{daily_pl:,.2f} ({daily_pl_pct:+.2f}%) today
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Goal progress (if goal exists)
+    try:
+        tracker = GoalTracker()
+        progress = tracker.get_goal_progress(portfolio_value)
+
+        if progress.get("has_goal"):
+            # Goal progress bar
+            progress_pct = progress['progress_percentage']
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); padding: 1rem; border-radius: 12px; margin: 1rem 0;'>
+                <div style='font-size: 0.875rem; color: #4a5568; margin-bottom: 0.5rem;'>
+                    🎯 Goal: {progress['goal_name']} • Target: ${progress['target_amount']:,.0f} by {progress['target_year']}
+                </div>
+                <div style='background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;'>
+                    <div style='background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); height: 100%; width: {min(100, progress_pct):.1f}%;'></div>
+                </div>
+                <div style='font-size: 0.875rem; color: #718096; margin-top: 0.5rem;'>
+                    {progress_pct:.1f}% complete • {progress['years_remaining']} years remaining
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            # No goal - show CTA
+            st.info("🎯 **Set a financial goal** to see your progress here. Visit the Goals page to get started.", icon="💡")
+
+    except Exception:
+        # Silently fail if goal tracking isn't available
+        pass
 
     st.markdown("---")
 
-    # Main dashboard grid
-    col_left, col_right = st.columns([2, 1])
+    # ========================================
+    # KEY METRICS - Reduced to 3 most important
+    # ========================================
 
-    with col_left:
-        st.markdown("## 🎯 Portfolio Overview")
+    col1, col2, col3 = st.columns(3)
 
+    with col1:
+        st.metric(
+            "💵 Cash Available",
+            f"${cash:,.2f}",
+            help="Available cash for trading"
+        )
+
+    with col2:
+        st.metric(
+            "📊 Total Equity",
+            f"${equity:,.2f}",
+            help="Current equity value"
+        )
+
+    with col3:
+        # Show last check time if available
+        if 'last_check' in st.session_state and st.session_state.last_check:
+            last_check_time = st.session_state.last_check.strftime("%I:%M %p")
+            st.metric(
+                "🕐 Last Check",
+                last_check_time,
+                help="When the system last ran a rebalance check"
+            )
+        else:
+            st.metric(
+                "🕐 Last Check",
+                "Never",
+                help="Run your first daily check to start automated management"
+            )
+
+    st.markdown("---")
+
+    # ========================================
+    # PRIMARY ACTION - Prominent CTA
+    # ========================================
+
+    st.markdown("## ⚡ What do you want to do?")
+
+    action_col1, action_col2, action_col3 = st.columns(3)
+
+    with action_col1:
+        if st.button("🔄 RUN DAILY CHECK", type="primary", use_container_width=True, help="Check if rebalancing is needed and execute if necessary"):
+            with st.spinner("🔄 Running daily check..."):
+                try:
+                    dalio.run_daily_check(dry_run=False)
+                    st.session_state.last_check = datetime.now()
+                    st.session_state.execution_count += 1
+                    st.success("✅ Daily check complete!")
+                    st.balloons()
+                    st.rerun()
+                except Exception as e:
+                    message, severity = translate_exception(e, context="Running daily check")
+                    handle_error_display(message, severity)
+
+    with action_col2:
+        if st.button("🧪 DRY RUN", use_container_width=True, help="Preview what would happen without executing trades"):
+            with st.spinner("🧪 Running dry run..."):
+                try:
+                    dalio.run_daily_check(dry_run=True)
+                    st.session_state.last_check = datetime.now()
+                    st.session_state.execution_count += 1
+                    st.success("✅ Dry run complete!")
+                    st.rerun()
+                except Exception as e:
+                    message, severity = translate_exception(e, context="Running dry run")
+                    handle_error_display(message, severity)
+
+    with action_col3:
+        if st.button("📊 GENERATE REPORT", use_container_width=True, help="Create a performance summary"):
+            with st.spinner("📊 Generating report..."):
+                try:
+                    report = dalio.generate_performance_report()
+                    st.success("✅ Report generated!")
+                    st.json(report)
+                except Exception as e:
+                    message, severity = translate_exception(e, context="Generating report")
+                    handle_error_display(message, severity)
+
+    st.markdown("---")
+
+    # ========================================
+    # DETAILED SECTIONS - All in Expanders (Progressive Disclosure)
+    # ========================================
+
+    # Portfolio Allocation Details (Collapsed by default)
+    with st.expander("📊 **Portfolio Allocation** - See current vs. target breakdown", expanded=False):
         try:
             current_positions = dalio.get_current_positions()
             target_allocation = dalio.config['allocation']
@@ -560,7 +679,7 @@ else:
                 st.plotly_chart(fig, use_container_width=True)
 
             # Allocation comparison table
-            st.markdown("### 📊 Allocation Details")
+            st.markdown("### Allocation Details")
 
             allocation_data = []
             for ticker in target_allocation.keys():
@@ -586,51 +705,11 @@ else:
             st.dataframe(df, use_container_width=True, hide_index=True)
 
         except Exception as e:
-            st.error(f"⚠️ Error loading portfolio data: {str(e)}")
+            message, severity = translate_exception(e, context="Loading portfolio data")
+            handle_error_display(message, severity)
 
-    with col_right:
-        st.markdown("## ⚡ Quick Actions")
-
-        # Run daily check
-        if st.button("🔄 RUN DAILY CHECK", type="primary", use_container_width=True):
-            with st.spinner("🔄 Running daily check..."):
-                try:
-                    dalio.run_daily_check(dry_run=False)
-                    st.session_state.last_check = datetime.now()
-                    st.session_state.execution_count += 1
-                    st.success("✅ Daily check complete!")
-                    st.balloons()
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"❌ Check failed: {str(e)}")
-
-        # Dry run
-        if st.button("🧪 DRY RUN", use_container_width=True):
-            with st.spinner("🧪 Running dry run..."):
-                try:
-                    dalio.run_daily_check(dry_run=True)
-                    st.session_state.last_check = datetime.now()
-                    st.session_state.execution_count += 1
-                    st.success("✅ Dry run complete!")
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"❌ Dry run failed: {str(e)}")
-
-        # Generate report
-        if st.button("📊 GENERATE REPORT", use_container_width=True):
-            with st.spinner("📊 Generating report..."):
-                try:
-                    report = dalio.generate_performance_report()
-                    st.success("✅ Report generated!")
-                    st.json(report)
-                except Exception as e:
-                    st.error(f"❌ Report failed: {str(e)}")
-
-        st.markdown("---")
-
-        # Rebalance status
-        st.markdown("### 📏 System Status")
-
+    # System Status (Collapsed by default)
+    with st.expander("📏 **System Status** - Check rebalance needs", expanded=False):
         try:
             needs_rebal, reason = dalio.needs_rebalancing()
 
@@ -651,44 +730,42 @@ else:
                 st.markdown("<div class='status-badge status-success'>✅ ALL CLEAR</div>", unsafe_allow_html=True)
 
         except Exception as e:
-            st.error(f"Error checking status: {str(e)}")
+            message, severity = translate_exception(e, context="Checking system status")
+            handle_error_display(message, severity)
 
-        st.markdown("---")
+    # Advanced Actions (Collapsed by default)
+    with st.expander("⚙️ **Advanced Actions** - Force rebalance and manual controls", expanded=False):
+        st.warning("**⚠️ Warning:** Force Rebalance bypasses all safety checks and circuit breakers")
 
-        # Advanced actions
-        with st.expander("⚙️ ADVANCED ACTIONS"):
-            st.warning("**Force Rebalance** bypasses all checks")
+        if st.button("⚡ FORCE REBALANCE", use_container_width=True):
+            with st.spinner("⚡ Executing rebalance..."):
+                try:
+                    dalio.execute_rebalance(dry_run=False)
+                    st.session_state.execution_count += 1
+                    st.success("✅ Rebalance complete!")
+                    st.balloons()
+                    st.rerun()
+                except Exception as e:
+                    message, severity = translate_exception(e, context="Executing force rebalance")
+                    handle_error_display(message, severity)
 
-            if st.button("⚡ FORCE REBALANCE", use_container_width=True):
-                with st.spinner("⚡ Executing rebalance..."):
-                    try:
-                        dalio.execute_rebalance(dry_run=False)
-                        st.session_state.execution_count += 1
-                        st.success("✅ Rebalance complete!")
-                        st.balloons()
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"❌ Failed: {str(e)}")
+    # Recent Activity Log (Collapsed by default)
+    with st.expander("📜 **Recent Activity** - View system logs", expanded=False):
+        log_file = Path("logs/dalio_lite.log")
+        if log_file.exists():
+            try:
+                with open(log_file, 'r') as f:
+                    lines = f.readlines()
+                    recent_lines = lines[-30:]
 
-    st.markdown("---")
+                log_text = "".join(recent_lines)
+                st.text_area("Log Output", log_text, height=250, help="Last 30 lines from system log", label_visibility="collapsed")
 
-    # Activity log section
-    st.markdown("## 📜 Recent Activity")
-
-    log_file = Path("logs/dalio_lite.log")
-    if log_file.exists():
-        try:
-            with open(log_file, 'r') as f:
-                lines = f.readlines()
-                recent_lines = lines[-30:]
-
-            log_text = "".join(recent_lines)
-            st.text_area("Log Output", log_text, height=250, help="Last 30 lines from system log")
-
-        except Exception as e:
-            st.error(f"Error reading log: {str(e)}")
-    else:
-        st.info("📭 No activity yet - run your first check to see logs!")
+            except Exception as e:
+                message, severity = translate_exception(e, context="Reading log file")
+                handle_error_display(message, severity)
+        else:
+            st.info("📭 No activity yet - run your first check to see logs!")
 
 # Footer
 st.markdown("---")
