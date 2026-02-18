@@ -681,7 +681,7 @@ elif st.session_state.learning_level == "advanced":
             yaxis_type="log",
             height=500,
             hovermode='x unified'
-        ))
+        )
 
         st.plotly_chart(fig, use_container_width=True)
 
