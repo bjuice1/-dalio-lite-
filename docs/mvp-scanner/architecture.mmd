@@ -1,0 +1,48 @@
+graph TB
+    subgraph "Data Layer [SCALE: Medium, COMPLEXITY: Low]"
+        A[yfinance API<br/>Stock quotes & fundamentals<br/>🟢 Free, Rate: 2000/hour]
+        B[(SQLite Cache<br/>Last 24h data<br/>🟢 Local, Fast)]
+    end
+
+    subgraph "Screening Engine [CORE: MVP Focus]"
+        C[Data Fetcher<br/>Fetch 100-500 stocks<br/>⚡ Batch requests]
+        D[Technical Analyzer<br/>RSI, MACD, MA<br/>📊 pandas-ta]
+        E[Fundamental Filter<br/>P/E, Market Cap<br/>💰 Basic ratios]
+        F[Screening Engine<br/>Condition matching<br/>🎯 Simple AND/OR logic]
+    end
+
+    subgraph "Signal Generation [OUTPUT]"
+        G[Signal Generator<br/>Rank & score signals<br/>⭐ Top 5-10 results]
+        H[Email Formatter<br/>HTML templates<br/>📧 Actionable format]
+    end
+
+    subgraph "Infrastructure [REUSED from Dalio Lite]"
+        I[Error Handler<br/>From dalio_lite<br/>✅ Proven]
+        J[Notification System<br/>From send_notification.py<br/>✅ Email ready]
+        K[Monitoring<br/>From monitoring<br/>✅ Health checks]
+    end
+
+    subgraph "Scheduler [OVERNIGHT BATCH]"
+        L[Cron Job<br/>Run daily 11pm<br/>⏰ 30-60 min runtime]
+    end
+
+    A -->|Fetch quotes| C
+    C -->|Cache| B
+    B -->|Historical data| D
+    C -->|Live quotes| D
+    C -->|Fundamentals| E
+    D -->|Technical signals| F
+    E -->|Fundamental signals| F
+    F -->|Matched conditions| G
+    G -->|Top signals| H
+    H -->|Send email| J
+    I -->|Error handling| C
+    I -->|Error handling| D
+    I -->|Error handling| E
+    K -->|Monitor| C
+    L -->|Trigger| C
+
+    style F fill:#667eea
+    style G fill:#48bb78
+    style J fill:#ffd93d
+    style I fill:#6bcf7f

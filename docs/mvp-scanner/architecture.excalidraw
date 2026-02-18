@@ -1,0 +1,122 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "type": "rectangle",
+      "x": 100,
+      "y": 100,
+      "width": 600,
+      "height": 400,
+      "backgroundColor": "#e8f4fd",
+      "label": "Stock Scanner MVP Architecture"
+    },
+    {
+      "type": "text",
+      "x": 120,
+      "y": 130,
+      "text": "📊 DATA LAYER\n━━━━━━━━━━━━━━━\n• yfinance API (free stock data)\n• SQLite cache (24h TTL)\n• Batch fetch 100-500 stocks",
+      "fontSize": 16,
+      "fontFamily": "monospace"
+    },
+    {
+      "type": "rectangle",
+      "x": 120,
+      "y": 240,
+      "width": 260,
+      "height": 120,
+      "backgroundColor": "#667eea",
+      "strokeColor": "#5a67d8",
+      "label": "SCREENING ENGINE (NEW)"
+    },
+    {
+      "type": "text",
+      "x": 130,
+      "y": 260,
+      "text": "1. Data Fetcher\n2. Technical Analyzer (RSI, MACD)\n3. Fundamental Filter (P/E, MarketCap)\n4. Screening Engine (match strategies)",
+      "fontSize": 14,
+      "fontFamily": "monospace",
+      "textColor": "#ffffff"
+    },
+    {
+      "type": "rectangle",
+      "x": 420,
+      "y": 240,
+      "width": 260,
+      "height": 120,
+      "backgroundColor": "#48bb78",
+      "strokeColor": "#38a169",
+      "label": "SIGNAL GENERATION"
+    },
+    {
+      "type": "text",
+      "x": 430,
+      "y": 260,
+      "text": "1. Signal Generator (rank & score)\n2. Email Formatter (HTML template)\n3. Top 5-10 actionable signals\n4. Send via email (6am delivery)",
+      "fontSize": 14,
+      "fontFamily": "monospace",
+      "textColor": "#ffffff"
+    },
+    {
+      "type": "rectangle",
+      "x": 120,
+      "y": 400,
+      "width": 560,
+      "height": 80,
+      "backgroundColor": "#ffd93d",
+      "strokeColor": "#ffa500",
+      "label": "INFRASTRUCTURE (Reused from Dalio Lite)"
+    },
+    {
+      "type": "text",
+      "x": 130,
+      "y": 420,
+      "text": "✅ error_handler.py   ✅ send_notification.py   ✅ monitoring.py\n30% code reuse | 70% new domain logic",
+      "fontSize": 14,
+      "fontFamily": "monospace"
+    },
+    {
+      "type": "arrow",
+      "x": 250,
+      "y": 230,
+      "points": [[0, 0], [0, -80]],
+      "label": "Fetch quotes\nCache 24h"
+    },
+    {
+      "type": "arrow",
+      "x": 380,
+      "y": 300,
+      "points": [[0, 0], [40, 0]],
+      "label": "Matched\nsignals"
+    },
+    {
+      "type": "arrow",
+      "x": 550,
+      "y": 360,
+      "points": [[0, 0], [0, 40]],
+      "label": "Error handling\nMonitoring"
+    },
+    {
+      "type": "text",
+      "x": 120,
+      "y": 520,
+      "text": "🕐 OVERNIGHT BATCH PROCESS:\n11:00 PM → Trigger scan\n11:15 PM → Calculate indicators\n11:30 PM → Screen for signals\n11:45 PM → Generate email\n12:00 AM → Send (user sees at 6am)\n\n⏱️ Total: 25-30 minutes runtime",
+      "fontSize": 14,
+      "fontFamily": "monospace",
+      "backgroundColor": "#f0f0f0"
+    },
+    {
+      "type": "text",
+      "x": 450,
+      "y": 520,
+      "text": "📋 MVP STRATEGIES (Week 1):\n\n1️⃣ RSI Oversold Bounce\n   RSI < 30, Price > 200-MA\n   Volume surge\n\n2️⃣ MACD Golden Cross\n   MACD bullish cross\n   Near 52-week high",
+      "fontSize": 14,
+      "fontFamily": "monospace",
+      "backgroundColor": "#e8f4fd"
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  }
+}
