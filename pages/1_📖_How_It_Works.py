@@ -25,8 +25,8 @@ st.markdown("""
     * { font-family: 'Inter', sans-serif !important; }
     .main { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
     .block-container {
-        padding: 2rem 3rem !important;
-        background: rgba(255, 255, 255, 0.98);
+        padding: 2rem 3rem;
+        background: white;
         border-radius: 20px;
         margin: 2rem auto;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -110,7 +110,7 @@ with col2:
         height=400,
         showlegend=False
     )
-    st.plotly_chart(fig, width='stretch')
+    st.plotly_chart(fig, use_container_width=True)
 
 # Economic environments table
 st.markdown("### 📊 Performance by Economic Environment")
@@ -123,7 +123,7 @@ env_data = pd.DataFrame({
     'Commodities (DBC)': ['🟢 Strong', '🔴 Weak', '🟢 Strong', '🔴 Weak']
 })
 
-st.dataframe(env_data, width='stretch', hide_index=True)
+st.dataframe(env_data, use_container_width=True, hide_index=True)
 
 st.markdown("---")
 

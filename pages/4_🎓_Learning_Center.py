@@ -26,8 +26,8 @@ st.markdown("""
     * { font-family: 'Inter', sans-serif !important; }
     .main { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
     .block-container {
-        padding: 2rem 3rem !important;
-        background: rgba(255, 255, 255, 0.98);
+        padding: 2rem 3rem;
+        background: white;
         border-radius: 20px;
         margin: 2rem auto;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
