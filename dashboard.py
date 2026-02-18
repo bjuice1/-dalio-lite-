@@ -59,9 +59,7 @@ st.markdown("""
     h1 {
         font-size: 3rem !important;
         font-weight: 700 !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #5a67d8 !important;
         margin-bottom: 0.5rem !important;
     }
 
@@ -76,6 +74,11 @@ st.markdown("""
         font-size: 1.2rem !important;
         font-weight: 600 !important;
         color: #4a5568 !important;
+    }
+
+    /* Paragraph text - ensure visibility */
+    p, div, span {
+        color: #2d3748 !important;
     }
 
     /* Sidebar */
@@ -460,7 +463,7 @@ if not st.session_state.connected:
             values=[40, 30, 20, 10],
             hole=0.4,
             marker=dict(colors=['#667eea', '#764ba2', '#f6ad55', '#fc8181']),
-            textfont=dict(size=16, color='white', family='Inter')
+            textfont=dict(size=16, color='#2d3748', family='Inter')
         )])
         fig.update_layout(
             title="Target Allocation",
@@ -501,7 +504,7 @@ else:
     st.markdown(f"""
     <div style='text-align: center; padding: 2rem 0 1rem 0;'>
         <div style='font-size: 1rem; color: #718096; margin-bottom: 0.5rem;'>Total Portfolio Value</div>
-        <div style='font-size: 4rem; font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>
+        <div style='font-size: 4rem; font-weight: 700; color: #5a67d8;'>
             ${portfolio_value:,.0f}
         </div>
         <div style='font-size: 1.2rem; color: {'#48bb78' if daily_pl >= 0 else '#f56565'}; margin-top: 0.5rem;'>
@@ -648,7 +651,7 @@ else:
                         values=list(current_positions.values()),
                         hole=0.4,
                         marker=dict(colors=['#667eea', '#764ba2', '#f6ad55', '#fc8181']),
-                        textfont=dict(size=14, color='white', family='Inter')
+                        textfont=dict(size=14, color='#2d3748', family='Inter')
                     )])
                     fig.update_layout(
                         title="Current Allocation",
@@ -667,7 +670,7 @@ else:
                     values=list(target_allocation.values()),
                     hole=0.4,
                     marker=dict(colors=['#667eea', '#764ba2', '#f6ad55', '#fc8181']),
-                    textfont=dict(size=14, color='white', family='Inter')
+                    textfont=dict(size=14, color='#2d3748', family='Inter')
                 )])
                 fig.update_layout(
                     title="Target Allocation",

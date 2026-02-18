@@ -33,9 +33,10 @@ st.markdown("""
     h1 {
         font-size: 3rem !important;
         font-weight: 700 !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #5a67d8 !important;
+    }
+    p, div, span {
+        color: #2d3748 !important;
     }
     .strategy-card {
         background: white;
@@ -207,7 +208,7 @@ if selected_strategy == "Custom Allocation":
         values=[vti_pct, tlt_pct, gld_pct, dbc_pct],
         hole=0.4,
         marker=dict(colors=['#667eea', '#764ba2', '#f6ad55', '#fc8181']),
-        textfont=dict(size=16, color='white', family='Inter')
+        textfont=dict(size=16, color='#2d3748', family='Inter')
     )])
     fig.update_layout(title="Your Custom Allocation", height=400)
     st.plotly_chart(fig, width='stretch')
@@ -272,7 +273,7 @@ else:
             values=list(strategy['allocation'].values()),
             hole=0.4,
             marker=dict(colors=['#667eea', '#764ba2', '#f6ad55', '#fc8181']),
-            textfont=dict(size=16, color='white', family='Inter')
+            textfont=dict(size=16, color='#2d3748', family='Inter')
         )])
         fig.update_layout(title=selected_strategy, height=400, showlegend=False)
         st.plotly_chart(fig, width='stretch')

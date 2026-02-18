@@ -30,9 +30,10 @@ st.markdown("""
     h1 {
         font-size: 3rem !important;
         font-weight: 700 !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #5a67d8 !important;
+    }
+    p, div, span {
+        color: #2d3748 !important;
     }
     .step-card {
         background: white;
